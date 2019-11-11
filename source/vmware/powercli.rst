@@ -16,10 +16,6 @@ PowerCLI
 
      #These modules are installed in the %homepath%\Documents\WindowsPowerShell\Modules
 
-     #Disable certificate checking and CEIP
-     Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Confirm:$false -ParticipateInCeip $false
-
-
 - **添加磁盘**    
 
   .. code-block:: powershell
