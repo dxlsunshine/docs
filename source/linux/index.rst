@@ -8,6 +8,11 @@ Linux
 
    shell
    mysql
+   docker
    kubernetes
+   git
+   redis
+   nexus
+   ceph
 
 

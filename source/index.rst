@@ -17,6 +17,7 @@ Contents:
    vmware/index
    python/index
    network/index
+   terraform/index
 
 
 

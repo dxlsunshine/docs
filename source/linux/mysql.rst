@@ -17,6 +17,11 @@ Mysql
     validate_password=off
     #skip-grant-tables
 
+ - mysql 配置
+
+   .. literalinclude:: conf/my.cnf
+       :language: bash 
+
 
  - 创建&更改用户密码
 

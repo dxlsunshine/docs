@@ -7,4 +7,5 @@ Python
       
 
    pyenv
+   django
 

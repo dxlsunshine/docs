@@ -7,4 +7,5 @@
 
 
    huawei
+   ruijie
 

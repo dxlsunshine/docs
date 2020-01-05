@@ -18,7 +18,7 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'mydoc'
+project = 'MyWiki'
 copyright = '2019, Xiaolaing Dai'
 author = 'Xiaolaing Dai'
 

@@ -1,6 +1,84 @@
 系统相关
 +++++++++
 
+BASH
+------
+
+ 1. 清空文件：>file
+ 2. 读文件并赋值变量：var=$(<file)，忽略文件最后一个换行。
+ 3. BASH_REMATCH
+
+     bash 3.0 支持进程内正则表达式 [[ string =~ regex ]]
+
+      .. code-block::  bash
+       
+      
+       if [[ 'abcfoobarbletch' =~ foo(bar)bl(.*) ]]
+        then
+          echo The regex matches!
+          echo $BASH_REMATCH       # -- outputs: foobarbletch
+          echo ${BASH_REPAMTCH[*]} #-- outputs: foobarbletch bar etch
+          echo ${BASH_REMATCH[1]}  #-- outputs: bar
+          echo ${BASH_REMATCH[2]}  #-- outputs: etch
+       fi
+
+
+ 4. 括号
+     
+     - **()** 
+
+       | 命令组。括号中的命令将会新开一个子shell顺序执行，所以括号中的变量不能够被脚本余下的部分使用。括号中多个命令之间用分号隔开，最后一个命令可以没有分号，各命令和括号之间不必有空格;
+       | 命令替换。等同于`cmd`，shell扫描一遍命令行，发现了$(cmd)结构，便将$(cmd)中的cmd执行一次，得到其标准输出，再将此输出放到原来命令。有些shell不支持，如tcsh; 
+       | 用于初始化数组。如：array=(a b c d). 
+     - **(())** 
+
+       | 整数扩展。这种扩展计算是整数型的计算，不支持浮点型。((exp))结构扩展并计算一个算术表达式的值，如果表达式的结果为0，那么返回的退出状态码为1，或者 是"假"，而一个非零值的表达式所返回的退出状态码将为0，或者是"true"。若是逻辑判断，表达式exp为真则为1,假则为0;
+       | 只要括号中的运算符、表达式符合C语言运算规则，都可用在$((exp))中，甚至是三目运算符。作不同进位(如二进制、八进制、十六进制)运算时，输出结果全都自动转化成了十进制。如：echo $((16#5f)) 结果为95 (16进位转十进制);
+       | 单纯用 (( )) 也可重定义变量值，比如 a=5; ((a++)) 可将 $a 重定义为6; 
+       | 常用于算术运算比较，双括号中的变量可以不使用$符号前缀。括号内支持多个表达式用逗号分开。 只要括号中的表达式符合C语言运算规则,比如可以直接使用for((i=0;i<5;i++)), 如果不使用双括号, 则为for i in \`seq 0 4\`或者for i in {0..4}。再如可以直接使用if (($i<5)), 如果不使用双括号, 则为if [ $i -lt 5 ]。
+
+     - **[]**
+
+       | bash 的内部命令，[]和test是等同的。
+       | Test和[]中可用的比较运算符只有==和!=，两者都是用于字符串比较的，不可用于整数比较，整数比较只能使用-eq，-gt这种形式。无论是字符串比较还是整数比较都不支持大于号小于号。
+     - **[[]]**
+
+       | bash 程序语言的关键字。并不是一个命令，[[ ]] 结构比[ ]结构更加通用。在[[和]]之间所有的字符都不会发生文件名扩展或者单词分割，但是会发生参数扩展和命令替换。
+       | 支持字符串的模式匹配，使用=~操作符时甚至支持shell的正则表达式。字符串比较时可以把右边的作为一个模式，而不仅仅是一个字符串，比如[[ hello == hell? ]]，结果为真。[[ ]] 中匹配字符串或通配符，不需要引号。
+
+     - **{}**
+
+       | 大括号拓展  # ls {ex1,ex2}.sh 
+       | 代码块，又被称为内部组,这个结构事实上创建了一个匿名函数.
+  
+nsenter
+''''''''
+ ..code-block:: bash
+
+  nsenter [options] [program [arguments]]
+    options:
+    -t, --target pid：指定被进入命名空间的目标进程的pid
+    -m, --mount[=file]：进入mount命令空间。如果指定了file，则进入file的命令空间
+    -u, --uts[=file]：进入uts命令空间。如果指定了file，则进入file的命令空间
+    -i, --ipc[=file]：进入ipc命令空间。如果指定了file，则进入file的命令空间
+    -n, --net[=file]：进入net命令空间。如果指定了file，则进入file的命令空间
+    -p, --pid[=file]：进入pid命令空间。如果指定了file，则进入file的命令空间
+    -U, --user[=file]：进入user命令空间。如果指定了file，则进入file的命令空间
+    -G, --setgid gid：设置运行程序的gid
+    -S, --setuid uid：设置运行程序的uid
+    -r, --root[=directory]：设置根目录
+    -w, --wd[=directory]：设置工作目录
+    #如果没有给出program，则默认执行$SHELL。
+
+
+系统参数
+--------
+
+/proc/sys/fs/file-max：The value in file-max denotes the maximum number of file-handles that the Linux kernel will allocate. When you get lots of error messages about running out of file handles, you might want to increase this limit
+/proc/sys/fs/file-nr：当前打开文件数   剩余 最大
+cat /proc/sys/fs/nr_open： 单进程允许最大打开文件数
+nofile: number of open files 最大可打开文件数，限制范围：用户和进程
+
 
 SSH 协议
 --------
@@ -112,6 +190,54 @@ SSH 免密
     　-j 　采用工作控制的格式显示进程状况。
     　-L 　采用详细的格式来显示进程状况。
 
+ - lsof
+
+   .. code-block:: bash
+     
+    lsof abc.txt                      #显示开启文件abc.txt的进程
+    lsof -c abc                       #显示abc进程现在打开的文件
+    lsof -c -p 1234,234               #列出进程号为1234的进程所打开的文件
+    lsof -g gid                       #显示归属gid的进程情况
+    lsof +d /usr/local/               #显示目录下被进程开启的文件
+    lsof +D /usr/local/               #同上，但是会搜索目录下的目录，时间较长
+    lsof -d 4                         #显示使用fd为4的进程
+    lsof -i                           #用以显示符合条件的进程情况
+    lsof -t                           #显示进程号，可以和kill配合使用
+    lsof -i[46] [protocol][@hostname|hostaddr][:service|port]
+    
+     #COMMAND 
+     #PID      
+     #USER   
+     #FD      File Descriptor, an abstract indicator for accessing of files. 
+     #   cwd stands for Current Working Directory of the listed process. 
+     #   txt is the Text Segment or the Code Segment (CS), the bit of the object containing executable instructions, or program code if you will. 
+     #   mem stands for Data Segments and Shared Objects loaded into the memory. 
+     #   10u refers to file descriptor 10, open for both reading and writing. 
+     #   rtd stands for root directory.
+
+     #TYPE    TYPE is directly linked to the FD column.It tells us what type of file we're working with.
+     #   DIR stands for directory. 
+     #   REG is a regular file or a page in memory. 
+     #   FIFO is a named pipe. Symbolic links, sockets and device files (block and character) are also file types. 
+     #   unknown means that the FD descriptor is of unknown type and locked. You will encounter these only with kernel threads.
+
+     #DEVICE  The DEVICE column tells us what device we're working on. The two numbers are called major and minor numbers. The list is well known and documented.
+     #   major number 8 stands for SCSI block device. 
+     #   For comparison, IDE disks have a major number 3. The minor number indicates one of the 15 available partitions. Thus (8,1) tell us we're working on sda1.
+
+     #SIZE/OFF   the file size.
+     #NODE       the Inode number.
+     #NAME       the name of the file.   
+     
+
+ - strace
+
+   .. code-block:: bash
+
+       #查看进程stdout
+       strace -ewrite -p $PID
+       strace -ewrite -p $PID 2>&1 | grep 'write(1,'   
+   
 查询编辑
 ----------
  - **Vim**
@@ -203,3 +329,13 @@ SSH 免密
     -l    查询多文件时, 只输出包含匹配字符的文件名
     -n    显示匹配的行号及行
     -v    显示不包含匹配文本的所有行(我经常用除去grep本身)
+
+dev设备查看
+------------
+  - 磁盘mapper关系查看
+     
+    .. code-block:: bash
+
+       #查看device和mapper设备的（Major, minor）
+       ls -al /dev/sd*
+       dmsetup ls --tree
